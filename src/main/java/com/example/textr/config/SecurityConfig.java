@@ -34,7 +34,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer:: disable)
                 .authorizeHttpRequests(
-                        req -> req.requestMatchers("/api/v1/login", "/api/v1/register") // Allow access to these specific endpoints
+                        req -> req.requestMatchers("/api/v1/login","/api/v1/hello", "/api/v1/register") // Allow access to these specific endpoints
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
@@ -61,6 +61,10 @@ public class SecurityConfig {
         authProvider.setUserDetailsService(userService.userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
+    }
+    @Bean
+    public BCryptPasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }

@@ -9,15 +9,17 @@ import com.example.textr.records.LoginUser;
 import com.example.textr.records.User;
 import com.example.textr.repository.UserRepository;
 import com.example.textr.security.utils.JwtTokenUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     @Autowired
     SecurityConfig securityConfig;
@@ -27,6 +29,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     JwtTokenUtils jwtTokenUtils;
+
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public LoginResponseRecord login(LoginUser loginUser) throws Exception {
@@ -46,8 +51,8 @@ public class AuthServiceImpl implements AuthService {
             String token = jwtTokenUtils.generateToken(userDto);
             record = LoginResponseRecord.builder()
                     .id(user.getId())
+                    .name(user.getName())
                     .email(user.getEmail())
-                    .password(user.getPassword())
                     .token(token)
                     .build();
 
@@ -57,5 +62,25 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomisedException("Failed Auth");
         }
         return record;
+    }
+
+    @Override
+    public User registerAccount(User user) throws CustomisedException {
+        com.example.textr.entity.User alreadyUser = userRepository.getUserByEmail(user.email());
+        if(alreadyUser!=null){
+            throw new CustomisedException("The email already exists!");
+        }
+        com.example.textr.entity.User newUser = com.example.textr.entity.User.builder()
+                .email(user.email())
+                .name(user.name())
+                .password(bCryptPasswordEncoder.encode(user.password()))
+                .build();
+        userRepository.save(newUser);
+        User userRecord = User.builder()
+                .email(newUser.getEmail())
+                .name(newUser.getName())
+                .password(user.password())
+                .build();
+        return userRecord;
     }
 }

@@ -3,6 +3,8 @@ package com.example.textr.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "tb_users")
 @Data
@@ -17,4 +19,11 @@ public class User {
     private String email;
     private String password;
     private String name;
+
+    @OneToMany(mappedBy = "senderId")
+    List<Message> sentMessage;
+
+    @OneToMany(mappedBy = "receiverId")
+    List<Message> receivedMessage;
+
 }
