@@ -1,5 +1,6 @@
 package com.example.textr.entity;
 
+import com.example.textr.enums.MessageStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +26,13 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "fk_receiver_id")
     private User receiverId;
+
     private String message;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private MessageStatus status;
+
     private Timestamp createdOn;
+
 }

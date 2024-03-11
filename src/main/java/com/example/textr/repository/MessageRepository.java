@@ -18,4 +18,10 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             "(tm.fk_sender_id = :receiver and tm.fk_receiver_id = :sender)\n" +
             "order by tm.created_on ",nativeQuery = true)
     public List<Message> getMessages(@Param("sender")Long sender, @Param("receiver")Long receiver);
+
+    @Query(value = "select COUNT(*) from tb_messages tm \n" +
+            "where tm.fk_sender_id = :sender and tm.fk_receiver_id = :receiver\n" +
+            "AND tm.status = 'SENT'\n",nativeQuery = true)
+    public Long getNewMessagesCount(@Param("sender")Long sender, @Param("receiver")Long receiver);
+
 }

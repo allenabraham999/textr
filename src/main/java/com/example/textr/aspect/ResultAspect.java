@@ -21,7 +21,6 @@ import java.util.ResourceBundle;
 @Aspect
 @Component
 public class ResultAspect {
-
     @Autowired
     private ResourceBundle resourceBundle;
 
@@ -107,5 +106,4 @@ public class ResultAspect {
         }
         return status;
     }
-
 }
