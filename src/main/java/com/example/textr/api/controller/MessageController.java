@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${spring.data.rest.base.path}"+"/secure/message")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*")
 public class MessageController {
     @Autowired
     MessageService messageService;
@@ -55,35 +55,35 @@ public class MessageController {
 //        return messages;
 //    }
 
-    @MessageMapping("/messages")
-    public void sendMessage(@Payload MessageRecord messageRecord) throws CustomisedException {
-        User toSendTo = userRepository.getUserById(messageRecord.sendTo());
-        if(toSendTo == null){
-            throw new CustomisedException("User doesn't exist!");
-        }
-        Message message = Message.builder()
-                .senderId(Utils.getCurrentUser())
-                .receiverId(userRepository.getUserById(messageRecord.sendTo()))
-                .message(messageRecord.message())
-                .status(MessageStatus.SENT)
-                .build();
-        Message savedMessage = messageRepository.save(message);
-        messagingTemplate.convertAndSendToUser(String.valueOf(savedMessage.getReceiverId()),
-                "/queue/messages",
-                MessageNotification.builder()
-                        .receiverId(savedMessage.getReceiverId().getId())
-                        .senderId(savedMessage.getSenderId().getId())
-                        .build());
-    }
-    @RequestMapping(method = RequestMethod.GET)
+//    @MessageMapping("/messages")
+//    public void sendMessage(@Payload MessageRecord messageRecord) throws CustomisedException {
+//        User toSendTo = userRepository.getUserById(messageRecord.sendTo());
+//        if(toSendTo == null){
+//            throw new CustomisedException("User doesn't exist!");
+//        }
+//        Message message = Message.builder()
+//                .senderId(Utils.getCurrentUser())
+//                .receiverId(userRepository.getUserById(messageRecord.sendTo()))
+//                .message(messageRecord.message())
+//                .status(MessageStatus.SENT)
+//                .build();
+//        Message savedMessage = messageRepository.save(message);
+//        messagingTemplate.convertAndSendToUser(String.valueOf(savedMessage.getReceiverId()),
+//                "/queue/messages",
+//                MessageNotification.builder()
+//                        .receiverId(savedMessage.getReceiverId().getId())
+//                        .senderId(savedMessage.getSenderId().getId())
+//                        .build());
+//    }
+    @RequestMapping(value = "/{from}/{to}",method = RequestMethod.GET)
     @APIResult(message = " ", error_message = " ", message_code = 0)
-    public Object getMessages(@RequestParam("from") Long from, @RequestParam("to") Long to){
-        return messageService.getMessages(from, to);
+    public Object getMessages(@PathVariable(value = "from") String from, @PathVariable(value = "to") String to){
+        return messageService.getMessages(Long.valueOf(from), Long.valueOf(to));
     }
 
-    @RequestMapping(value = "/count",method = RequestMethod.GET)
+    @RequestMapping(value = "/{from}/{to}/count",method = RequestMethod.GET)
     @APIResult(message = " ", error_message = " ", message_code = 0)
-    public Object getCountOfNewMessages(@RequestParam("from") Long from, @RequestParam("to") Long to){
-        return messageService.getNewMessagesCount(from, to);
+    public Object getCountOfNewMessages(@RequestParam("from") String from, @RequestParam("to") String to){
+        return messageService.getNewMessagesCount(Long.valueOf(from), Long.valueOf(to));
     }
 }

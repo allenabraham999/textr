@@ -14,18 +14,20 @@ import java.util.List;
 
 @Configuration
 @EnableWebSocketMessageBroker
+@EnableWebSocket
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void  configureMessageBroker(MessageBrokerRegistry config){
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker("/topic", "/queue/");
         config.setApplicationDestinationPrefixes("/app");
+        config.setUserDestinationPrefix("/user");
     }
 
     @Override
     public void  registerStompEndpoints(StompEndpointRegistry registry){
         registry.addEndpoint("/textr-socket")
-                .setAllowedOrigins("*").withSockJS();
+                .setAllowedOrigins("*");
     }
     @Override
     public boolean configureMessageConverters(List<MessageConverter> messageConverters) {

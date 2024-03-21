@@ -17,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -34,7 +36,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer:: disable)
                 .authorizeHttpRequests(
-                        req -> req.requestMatchers("/api/v1/login","/api/v1/hello", "/api/v1/register") // Allow access to these specific endpoints
+                        req -> req.requestMatchers("/api/v1/login","/api/v1/hello", "/api/v1/register", "*") // Allow access to these specific endpoints
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
@@ -48,6 +50,16 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer () {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE").allowedHeaders("*")
+                        .allowedOrigins("*");
+            }
+        };
+    }
 
     @Bean
     @Primary
