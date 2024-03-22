@@ -14,12 +14,12 @@ import java.util.List;
 
 @Configuration
 @EnableWebSocketMessageBroker
-@EnableWebSocket
+//@EnableWebSocket
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void  configureMessageBroker(MessageBrokerRegistry config){
-        config.enableSimpleBroker("/topic", "/queue/");
+        config.enableSimpleBroker("/topic", "/queue");
         config.setApplicationDestinationPrefixes("/app");
         config.setUserDestinationPrefix("/user");
     }
@@ -27,7 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void  registerStompEndpoints(StompEndpointRegistry registry){
         registry.addEndpoint("/textr-socket")
-                .setAllowedOrigins("*");
+                .setAllowedOrigins("http://127.0.0.1:5500/");
     }
     @Override
     public boolean configureMessageConverters(List<MessageConverter> messageConverters) {

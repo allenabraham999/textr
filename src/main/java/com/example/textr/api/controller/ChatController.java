@@ -18,6 +18,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -49,12 +51,15 @@ public class ChatController {
 
     @MessageMapping("/message")
     public void sendMessage(@Payload MessageRecord messageRecord) throws CustomisedException {
+        User from = userRepository.getUserById(messageRecord.from());
         User toSendTo = userRepository.getUserById(messageRecord.sendTo());
         if(toSendTo == null){
             throw new CustomisedException("User doesn't exist!");
         }
+//        User user = Utils.getCurrentUser();
         Message message = Message.builder()
-                .senderId(Utils.getCurrentUser())
+                .senderId(from)
+                .createdOn(new Timestamp(System.currentTimeMillis()))
                 .receiverId(userRepository.getUserById(messageRecord.sendTo()))
                 .message(messageRecord.message())
                 .status(MessageStatus.SENT)

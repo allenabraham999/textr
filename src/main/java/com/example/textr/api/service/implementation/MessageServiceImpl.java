@@ -6,6 +6,7 @@ import com.example.textr.entity.User;
 import com.example.textr.enums.MessageStatus;
 import com.example.textr.exception.CustomisedException;
 import com.example.textr.records.MessageRecord;
+import com.example.textr.records.UserTextHistoryRecord;
 import com.example.textr.repository.MessageRepository;
 import com.example.textr.repository.UserRepository;
 import com.example.textr.utils.Utils;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -60,5 +62,17 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public Long getNewMessagesCount(Long from, Long to){
         return messageRepository.getNewMessagesCount(from, to);
+    }
+
+    @Override
+    public List<UserTextHistoryRecord> getAllUsersTextHistory(Long from) {
+        List<User> users = userRepository.getAllTextedUsers(from);
+        List<UserTextHistoryRecord> history = new ArrayList<>();
+        users.forEach(u->history.add(UserTextHistoryRecord.builder()
+                .id(u.getId())
+                .name(u.getName())
+                .email(u.getEmail())
+                .build()));
+        return history;
     }
 }

@@ -24,4 +24,5 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             "AND tm.status = 'SENT'\n",nativeQuery = true)
     public Long getNewMessagesCount(@Param("sender")Long sender, @Param("receiver")Long receiver);
 
+
 }

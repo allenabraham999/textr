@@ -86,4 +86,10 @@ public class MessageController {
     public Object getCountOfNewMessages(@RequestParam("from") String from, @RequestParam("to") String to){
         return messageService.getNewMessagesCount(Long.valueOf(from), Long.valueOf(to));
     }
+
+    @RequestMapping(value = "/{from}", method = RequestMethod.GET)
+    @APIResult(message = " ", error_message = " ")
+    public Object getUsersChatHistory(@PathVariable("from")String from){
+        return messageService.getAllUsersTextHistory(Long.valueOf(from));
+    }
 }
