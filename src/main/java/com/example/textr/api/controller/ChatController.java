@@ -65,11 +65,18 @@ public class ChatController {
                 .status(MessageStatus.SENT)
                 .build();
         Message savedMessage = messageRepository.save(message);
-        messagingTemplate.convertAndSendToUser(String.valueOf(savedMessage.getReceiverId()),
-                "/queue/messages",
-                MessageNotification.builder()
-                        .receiverId(savedMessage.getReceiverId().getId())
-                        .senderId(savedMessage.getSenderId().getId())
-                        .build());
+//Old one
+//        messagingTemplate.convertAndSendToUser(String.valueOf(savedMessage.getReceiverId()),
+//                "/queue/messages",
+//                MessageNotification.builder()
+//                        .receiverId(savedMessage.getReceiverId().getId())
+//                        .senderId(savedMessage.getSenderId().getId())
+//                        .build());
+        String conversationQueue = "/queue/conversation/" + from.getId() + "/" + toSendTo.getId();
+        messagingTemplate.convertAndSend(conversationQueue, MessageNotification.builder()
+                .receiverId(savedMessage.getReceiverId().getId())
+                .senderId(savedMessage.getSenderId().getId())
+                .build());
+
     }
 }
